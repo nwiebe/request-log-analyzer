@@ -32,9 +32,10 @@ module RequestLogAnalyzer::Tracker
     end
   
     def report(output = STDOUT, report_width = 80, color = false)
+      setup_report_chars
       if options[:title]
         output << "\n#{options[:title]}\n"
-        output << green('━' * options[:title].length, color) + "\n"
+        output << green(dash * options[:title].length, color) + "\n"
       end
       
       first_date  = DateTime.parse(@first.to_s, '%Y%m%d%H%M%S') rescue nil

@@ -12,6 +12,9 @@ module RequestLogAnalyzer
     class Base
 
       attr_reader :options
+
+      #These methods return the correct char for UTF-8 or ASCII output after calling setup_report_chars
+      attr_reader :graph_char, :dash, :bar
       
       def initialize(options ={})
         @options = options
@@ -47,6 +50,20 @@ module RequestLogAnalyzer
       def report(output=STDOUT, report_width = 80, color = false)
         output << self.inspect
         output << "\n"  
+      end
+
+      #Defines a few characters used in making the reports based on if UTF-8 output is allowed or just ASCII output is allowed.
+      #If <tt>color</tt> is ture, then UTF-8 characters are allowed in the output, otherwise only ASCII characters are allowed.
+      def setup_report_chars(color = false)
+        if color
+          @graph_char = '░'
+          @dash = '━'
+          @bar = "┃"
+        else
+          @graph_char = '='
+          @dash = '-'
+          @bar = "|"
+        end
       end
            
     end 

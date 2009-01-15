@@ -41,29 +41,31 @@ module RequestLogAnalyzer::Tracker
     end
   
     def report_table(output = STDOUT, amount = 10, options = {}, &block)
-      
+      setup_report_chars(options[:color])
+
       top_categories = @categories.sort { |a, b| yield(b[1]) <=> yield(a[1]) }.slice(0...amount)
       max_cat_length = top_categories.map { |a| a[0].length }.max || 0
       space_left = [options[:report_width] - 33, [max_cat_length + 1, options[:title].length].max].min
       
       output << "\n"
-      output << "%-#{space_left+1}s┃    Hits ┃      Sum. |      Avg." % [options[:title][0...space_left]] + "\n"
-      output << green('━' * options[:report_width], options[:color]) + "\n"
+      output << "%-#{space_left+1}s#{bar}    Hits #{bar}      Sum. #{bar}      Avg." % [options[:title][0...space_left]] + "\n"
+      output << green(dash * options[:report_width], options[:color]) + "\n"
           
       top_categories.each do |(cat, info)|
         hits  = info[:count]
         total = "%0.02f" % info[:total_duration]
         avg   = "%0.02f" % (info[:total_duration] / info[:count])
-        output << "%-#{space_left+1}s┃%8d ┃%9ss ┃%9ss" % [cat[0...space_left], hits, total, avg] + "\n"
+        output << "%-#{space_left+1}s#{bar}%8d #{bar}%9ss #{bar}%9ss" % [cat[0...space_left], hits, total, avg] + "\n"
       end
     end
   
     def report(output = STDOUT, report_width = 80, color = false)
+      setup_report_chars(color)
 
       options[:title]  ||= 'Request duration'
       options[:report] ||= [:total, :average]
       options[:top]    ||= 20
-    
+
       options[:report].each do |report|
         case report
         when :average

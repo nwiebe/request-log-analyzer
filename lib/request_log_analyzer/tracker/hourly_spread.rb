@@ -45,9 +45,11 @@ module RequestLogAnalyzer::Tracker
     end
   
     def report(output = STDOUT, report_width = 80, color = false)
+      setup_report_chars(color)
+
       output << "\n"
       output << "Requests graph - average per day per hour\n"
-      output << green("━" * report_width, color) + "\n"
+      output << green(dash * report_width, color) + "\n"
       
       if @request_time_graph == [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
         output << "None found.\n"
@@ -66,9 +68,9 @@ module RequestLogAnalyzer::Tracker
         request_today = requests / days
       
         if display_chars >= color_cutoff
-          display_chars_string = green(('░' * color_cutoff), color) + red(('░' * (display_chars - color_cutoff)), color)
+          display_chars_string = green((graph_char * color_cutoff), color) + red((graph_char * (display_chars - color_cutoff)), color)
         else
-          display_chars_string = green(('░' * display_chars), color)
+          display_chars_string = green((graph_char * display_chars), color)
         end
       
         output << "#{index.to_s.rjust(3)}:00 - #{(request_today.to_s + ' hits').ljust(15)} : #{display_chars_string}\n"

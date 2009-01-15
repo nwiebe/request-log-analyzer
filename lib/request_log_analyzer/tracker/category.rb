@@ -40,11 +40,13 @@ module RequestLogAnalyzer::Tracker
     end
   
     def report(output = STDOUT, report_width = 80, color = false)
+      setup_report_chars(color)
+
       if options[:title]
         output << "\n#{options[:title]}\n"
-        output << green(('━' * report_width), color) + "\n"
+        output << green((dash * report_width), color) + "\n"
       end
-    
+
       if @categories.empty?
         output << "None found.\n" 
       else
@@ -55,11 +57,11 @@ module RequestLogAnalyzer::Tracker
         adjuster = color ? 33 : 24 # justifcation calcultaion is slight different when color codes are inserterted
         max_cat_length = [sorted_categories.map { |c| c[0].to_s.length }.max, report_width - adjuster].min
         sorted_categories.each do |(cat, count)|
-          text = "%-#{max_cat_length+1}s┃%7d hits %s" % [cat.to_s[0..max_cat_length], count, (green("(%0.01f%%)", color) % [(count.to_f / total_hits) * 100])]
+          text = "%-#{max_cat_length+1}s#{bar}%7d hits %s" % [cat.to_s[0..max_cat_length], count, (green("(%0.01f%%)", color) % [(count.to_f / total_hits) * 100])]
           space_left  = report_width - (max_cat_length + adjuster + 3)
           if space_left > 3
             bar_chars  = (space_left * (count.to_f / total_hits)).round
-            output << "%-#{max_cat_length + adjuster}s %s%s" % [text, '┃', '░' * bar_chars] + "\n"
+            output << "%-#{max_cat_length + adjuster}s %s%s" % [text, bar, @graph_char * bar_chars] + "\n"
           else
             output << text + "\n"
           end

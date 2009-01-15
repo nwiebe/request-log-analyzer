@@ -79,8 +79,17 @@ module RequestLogAnalyzer::Aggregator
     end
     
     def report_header(output=STDOUT, report_width = 80, color = false)
+     if color
+        graph_char = '░'
+        dash = '━'
+        bar = "┃"
+      else
+        graph_char = '='
+        dash = '-'
+        bar = "|"
+      end
       output << "Request summary\n"
-      output << green("━" * report_width, color) + "\n"
+      output << green(dash * report_width, color) + "\n"
       output << "Parsed lines:         #{green(source.parsed_lines, color)}\n"
       output << "Parsed requests:      #{green(source.parsed_requests, color)}\n"
       output << "Skipped lines:        #{green(source.skipped_lines, color)}\n" if source.skipped_lines > 0
